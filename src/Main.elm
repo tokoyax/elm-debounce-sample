@@ -14,9 +14,15 @@ type alias Model =
     }
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( { width = 0, height = 0 }, Cmd.none )
+type alias Flags =
+    { width : Int
+    , height : Int
+    }
+
+
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    ( { width = flags.width, height = flags.height }, Cmd.none )
 
 
 
@@ -63,9 +69,9 @@ view model =
 ---- PROGRAM ----
 
 
-main : Program Never Model Msg
+main : Program Flags Model Msg
 main =
-    Html.program
+    Html.programWithFlags
         { view = view
         , init = init
         , update = update
