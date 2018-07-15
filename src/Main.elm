@@ -1,19 +1,22 @@
 module Main exposing (..)
 
-import Html exposing (Html, text, div, h1, img)
+import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (src)
+import Window exposing (Size, resizes)
 
 
 ---- MODEL ----
 
 
 type alias Model =
-    {}
+    { width : Int
+    , height : Int
+    }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( {}, Cmd.none )
+    ( { width = 0, height = 0 }, Cmd.none )
 
 
 
@@ -21,12 +24,25 @@ init =
 
 
 type Msg
-    = NoOp
+    = ResizeWindow Size
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        ResizeWindow { width, height } ->
+            ( { model | width = width, height = height }, Cmd.none )
+
+
+
+---- SUBSCRIPTIONS ----
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ Window.resizes (\{ height, width } -> ResizeWindow (Size width height))
+        ]
 
 
 
@@ -36,8 +52,10 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ img [ src "/logo.svg" ] []
-        , h1 [] [ text "Your Elm App is working!" ]
+        [ text "width: "
+        , text <| toString model.width
+        , text ", height: "
+        , text <| toString model.height
         ]
 
 
@@ -51,5 +69,5 @@ main =
         { view = view
         , init = init
         , update = update
-        , subscriptions = always Sub.none
+        , subscriptions = subscriptions
         }
